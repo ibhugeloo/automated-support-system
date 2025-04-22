@@ -1,0 +1,99 @@
+---
+import Layout from '../layouts/Layout.astro';
+import business from '../data/business.json';
+---
+
+<Layout title={business.name}>
+  <main class="min-h-screen">
+    <!-- Hero Section -->
+    <section class="relative h-[60vh] bg-cover bg-center" style={`background-image: url(${business.images.hero})`}>
+      <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="text-center text-white">
+          <h1 class="text-5xl font-bold mb-4">{business.name}</h1>
+          <p class="text-xl">{business.description}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Informations Section -->
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- Contact Info -->
+          <div class="bg-gray-50 p-6 rounded-lg">
+            <h2 class="text-2xl font-semibold mb-4">Nous contacter</h2>
+            <div class="space-y-3">
+              <p><strong>Adresse:</strong> {business.address}</p>
+              <p><strong>Téléphone:</strong> {business.phone}</p>
+              <p><strong>Email:</strong> {business.email}</p>
+            </div>
+          </div>
+
+          <!-- Opening Hours -->
+          <div class="bg-gray-50 p-6 rounded-lg">
+            <h2 class="text-2xl font-semibold mb-4">Horaires d'ouverture</h2>
+            <div class="space-y-2">
+              {Object.entries(business.openingHours).map(([day, hours]) => (
+                <p>
+                  <span class="capitalize">{day}:</span> {hours}
+                </p>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features & Specialties -->
+    <section class="py-16 bg-gray-100">
+      <div class="container mx-auto px-4">
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- Features -->
+          <div>
+            <h2 class="text-2xl font-semibold mb-4">Nos services</h2>
+            <ul class="list-disc list-inside space-y-2">
+              {business.features.map((feature) => (
+                <li>{feature}</li>
+              ))}
+            </ul>
+          </div>
+
+          <!-- Specialties -->
+          <div>
+            <h2 class="text-2xl font-semibold mb-4">Nos spécialités</h2>
+            <ul class="list-disc list-inside space-y-2">
+              {business.specialties.map((specialty) => (
+                <li>{specialty}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery -->
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-semibold mb-8 text-center">Notre galerie</h2>
+        <div class="grid md:grid-cols-3 gap-4">
+          {business.images.gallery.map((image) => (
+            <img src={image} alt="Gallery" class="w-full h-64 object-cover rounded-lg" />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Social Media -->
+    <section class="py-8 bg-gray-900 text-white">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-center space-x-6">
+          {Object.entries(business.socialMedia).map(([platform, url]) => (
+            <a href={url} target="_blank" rel="noopener noreferrer" class="hover:text-gray-300">
+              <span class="capitalize">{platform}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
