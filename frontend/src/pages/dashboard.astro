@@ -1,0 +1,154 @@
+---
+import Layout from '../layouts/Layout.astro';
+import DashboardStats from '../components/DashboardStats';
+import { getAirtableData } from '../utils/airtable';
+
+// Vérification du token
+const token = Astro.url.searchParams.get('token');
+if (token !== import.meta.env.PUBLIC_DASHBOARD_ACCESS_TOKEN) {
+  return Astro.redirect('/');
+}
+
+// Récupération des données Airtable
+const records = await getAirtableData();
+---
+
+<Layout title="Tableau de bord">
+  <main class="min-h-screen bg-gray-100 p-6">
+    <div class="max-w-7xl mx-auto">
+      <h1 class="text-3xl font-bold text-gray-900 mb-8">Tableau de bord</h1>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Stats générales -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h2 class="text-xl font-semibold mb-4">Statistiques générales</h2>
+          <DashboardStats client:load records={records} />
+        </div>
+
+        <!-- Graphiques -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h2 class="text-xl font-semibold mb-4">Évolution des demandes</h2>
+          <div class="h-[300px]">
+            <canvas id="requestsChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Distribution par canal -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h2 class="text-xl font-semibold mb-4">Distribution par canal</h2>
+          <div class="h-[300px]">
+            <canvas id="channelChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Distribution par catégorie -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h2 class="text-xl font-semibold mb-4">Types de demandes</h2>
+          <div class="h-[300px]">
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dernières demandes -->
+      <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold mb-4">Dernières demandes</h2>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Canal</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Message</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Catégorie</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              {records.slice(0, 10).map((record) => (
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {new Date(record.createdTime).toLocaleDateString()}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {record.fields.client_name}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {record.fields.channel}
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-500 max-w-md truncate">
+                    {record.fields.message}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {record.fields.category}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    import { Chart, registerables } from 'chart.js';
+    Chart.register(...registerables);
+
+    // Fonction pour créer les graphiques
+    function createCharts(records) {
+      // Graphique d'évolution des demandes
+      const requestsCtx = document.getElementById('requestsChart');
+      new Chart(requestsCtx, {
+        type: 'line',
+        data: {
+          labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+          datasets: [{
+            label: 'Nombre de demandes',
+            data: [12, 19, 3, 5, 2, 3, 7],
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+          }]
+        }
+      });
+
+      // Graphique de distribution par canal
+      const channelCtx = document.getElementById('channelChart');
+      new Chart(channelCtx, {
+        type: 'pie',
+        data: {
+          labels: ['Telegram', 'WhatsApp'],
+          datasets: [{
+            data: [65, 35],
+            backgroundColor: ['rgb(54, 162, 235)', 'rgb(75, 192, 192)']
+          }]
+        }
+      });
+
+      // Graphique de distribution par catégorie
+      const categoryCtx = document.getElementById('categoryChart');
+      new Chart(categoryCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Réservation', 'Information', 'Réclamation', 'Autre'],
+          datasets: [{
+            label: 'Nombre de demandes',
+            data: [25, 15, 5, 10],
+            backgroundColor: 'rgb(153, 102, 255)'
+          }]
+        }
+      });
+    }
+
+    // Initialisation des graphiques au chargement de la page
+    document.addEventListener('DOMContentLoaded', () => {
+      const records = JSON.parse(document.getElementById('airtableData').textContent);
+      createCharts(records);
+    });
+  </script>
+
+  <!-- Données Airtable pour le JavaScript -->
+  <script id="airtableData" type="application/json">
+    {JSON.stringify(records)}
+  </script>
+</Layout>
