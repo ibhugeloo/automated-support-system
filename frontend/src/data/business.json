@@ -1,0 +1,42 @@
+{
+  "name": "Mon Commerce",
+  "type": "Restaurant",
+  "description": "Une cuisine authentique et raffinée au cœur de la ville",
+  "address": "123 rue du Commerce, 75001 Paris",
+  "phone": "+33 1 23 45 67 89",
+  "email": "contact@moncommerce.fr",
+  "openingHours": {
+    "monday": "12:00-14:30, 19:00-22:30",
+    "tuesday": "12:00-14:30, 19:00-22:30",
+    "wednesday": "12:00-14:30, 19:00-22:30",
+    "thursday": "12:00-14:30, 19:00-22:30",
+    "friday": "12:00-14:30, 19:00-22:30",
+    "saturday": "12:00-23:00",
+    "sunday": "12:00-15:00"
+  },
+  "socialMedia": {
+    "facebook": "https://facebook.com/moncommerce",
+    "instagram": "https://instagram.com/moncommerce",
+    "twitter": "https://twitter.com/moncommerce"
+  },
+  "images": {
+    "logo": "/images/logo.png",
+    "hero": "/images/hero.jpg",
+    "gallery": [
+      "/images/gallery1.jpg",
+      "/images/gallery2.jpg",
+      "/images/gallery3.jpg"
+    ]
+  },
+  "features": [
+    "Terrasse",
+    "Climatisation",
+    "Wifi gratuit",
+    "Accessible PMR"
+  ],
+  "specialties": [
+    "Plats fait maison",
+    "Produits locaux",
+    "Menu végétarien"
+  ]
+}
